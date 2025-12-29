@@ -1,91 +1,83 @@
 # AGENTS_BASE.md
 
 ## Purpose
-This file defines **non-negotiable behavioural rules** for autonomous agents
-working in repositories that reference it.
+This file defines **non-negotiable rules** for autonomous agents working on
+any IanBod Perl-based web project.
 
-These rules exist to preserve consistency, safety, and intent across
-independent codebases.
+These rules encode the **core web stack assumptions** shared across all sites.
+They exist to preserve stability, consistency, and long-term maintainability.
 
 Agents must follow these rules unless a repository’s local `AGENTS.md`
-explicitly overrides them.
+explicitly adds *stricter* constraints.
 
 ---
 
 ## Authority
-- This file is authoritative
-- Repository-level `AGENTS.md` may add constraints but must not weaken these
-- In the event of conflict, the **stricter rule applies**
+- This file is authoritative across all repositories
+- Local `AGENTS.md` files may add rules but must not weaken these
+- When rules conflict, the **stricter rule applies**
 
 ---
 
 ## Scope
 These rules apply to:
-- Code generation
-- Code modification
-- File creation and deletion
-- Structural or architectural decisions
+- Web scripts
+- AJAX handlers
+- API endpoints
+- Cron jobs and background workers
+- Code generation and modification
 
-They do **not** define:
+They do not define:
 - Business logic
-- Product decisions
-- Visual or stylistic preferences
+- UI design choices
+- Product or pricing decisions
 
 ---
 
-## General Behaviour
+## Core Web Stack (Non-Negotiable)
 
-- Prefer existing patterns over new ones
-- Prefer simplicity over abstraction
-- Prefer explicit code over clever code
-- Do not introduce frameworks unless instructed
-- Do not refactor unrelated code opportunistically
+### Perl Environment
+- Perl is the backend language
+- No alternative runtimes may be introduced
+
+### Request Handling
+- **Never use `CGI.pm`**
+- Request parameters come from `%data`
+- Cookies come from `%cookie`
+- `%data` contains merged GET and POST parameters
+
+### Database Access
+- **Never call `DBI->connect`**
+- A global `$dbh` is always provided
+- Assume `$dbh` is valid and connected
+
+### Required Modules (Web Scripts)
+
+All web-facing scripts must use:
+
+```perl
+use strict;
+use warnings;
+
+use lib "$ENV{'DOCUMENT_ROOT'}/../lib";
+
+use Bod::Web::Utils;    # provides $dbh, %data, %cookie
+use Site::HTML;         # HTML rendering
+use JSON;               # encode_json / decode_json (if needed)
+
+```
 
 ---
 
 ## Change Discipline
 
 - Make the smallest change that satisfies the request
-- Avoid wide-reaching edits unless explicitly asked
-- Do not “improve” code without a clear prompt
+- Do not refactor unrelated code
+- Do not introduce abstractions or frameworks unprompted
+- Prefer existing patterns over new ones
 
-If a safer or cleaner alternative exists, **suggest it** — do not implement it
-unprompted.
-
----
-
-## Dependencies
-
-- Do not introduce new dependencies unless explicitly instructed
-- Assume that existing dependencies are intentional
-- Do not remove dependencies unless explicitly asked
-
----
-
-## Environment Assumptions
-
-- Assume production systems are long-lived
-- Assume backward compatibility matters
-- Assume data and users already exist
-
-Avoid changes that could invalidate assumptions silently.
-
----
-
-## Error Handling
-
-- Prefer local, explicit error handling
-- Do not introduce global exception systems
-- Do not suppress errors unless instructed
-
----
-
-## Uncertainty Handling
-
-If requirements are ambiguous:
-- Make the safest reasonable assumption
-- State the assumption clearly
-- Ask for clarification before proceeding with irreversible changes
+If a safer alternative exists, suggest it — do not implement it
+without confirmation.
 
 ---
 
