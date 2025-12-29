@@ -34,6 +34,23 @@ They do not define:
 
 ---
 
+## Directory Structure
+
+Unless explicitly stated otherwise, agents should assume the following
+project structure:
+
+- `lib/` – Perl modules
+- `template/` – Template Toolkit files (`.tt`)
+- `www/` – public webroot
+  - Page scripts
+  - AJAX handlers
+  - Rare API endpoints
+- `data/` – data files
+
+Do not introduce new top-level directories without confirmation.
+
+---
+
 ## Core Web Stack (Non-Negotiable)
 
 ### Perl Environment
